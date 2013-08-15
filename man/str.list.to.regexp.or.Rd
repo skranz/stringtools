@@ -1,0 +1,19 @@
+\name{str.list.to.regexp.or}
+\alias{str.list.to.regexp.or}
+\title{Transforms a vector of strings like c("A","B","C") into "A|B|C"}
+\usage{
+  str.list.to.regexp.or(str, fixed = TRUE)
+}
+\arguments{
+  \item{str}{a string vector}
+
+  \item{fixed}{if TRUE treats str as constants in regexp}
+}
+\value{
+  a single string
+}
+\description{
+  Transforms a vector of strings like c("A","B","C") into
+  "A|B|C"
+}
+

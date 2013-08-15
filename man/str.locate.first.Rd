@@ -1,0 +1,22 @@
+\name{str.locate.first}
+\alias{str.locate.first}
+\title{Finds start and end positions of first substring that matches pattern}
+\usage{
+  str.locate.first(str, pattern, fixed = TRUE,
+    perl = FALSE, ignore = NULL, ignore.pos = NULL,
+    pos.only = NULL)
+}
+\arguments{
+  \item{ignore.pos}{a logical vector or logical matrix
+  indicating which locations of str shall be ignored in the
+  search}
+}
+\value{
+  single.return is a 1*2 matrix. First column start
+  position, second column end position
+}
+\description{
+  Finds start and end positions of first substring that
+  matches pattern
+}
+

@@ -1,0 +1,11 @@
+\name{str.at.pos}
+\alias{str.at.pos}
+\title{pos is a matrix or a list of matrices specifying positions as returned by str.locate.all}
+\usage{
+  str.at.pos(str, pos)
+}
+\description{
+  pos is a matrix or a list of matrices specifying
+  positions as returned by str.locate.all
+}
+

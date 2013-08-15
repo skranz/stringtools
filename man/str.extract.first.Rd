@@ -1,0 +1,13 @@
+\name{str.extract.first}
+\alias{str.extract.first}
+\title{Returns a vector that contains for each element of str (or pattern) the first substring that matches pattern or NA if no match could be found}
+\usage{
+  str.extract.first(str, pattern, fixed = FALSE,
+    perl = FALSE, ignore = NULL)
+}
+\description{
+  Returns a vector that contains for each element of str
+  (or pattern) the first substring that matches pattern or
+  NA if no match could be found
+}
+
