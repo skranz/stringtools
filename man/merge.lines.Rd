@@ -8,3 +8,8 @@
   transforms c("A","B") into "A\nB"
 }
 
+\examples{\dontrun{
+  merge = merge.lines(c("A","B"))
+  merge
+  sep.lines(merge)
+}}

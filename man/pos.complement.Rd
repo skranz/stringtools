@@ -10,3 +10,12 @@
   matrix
 }
 
+\examples{\dontrun{
+  pos = matrix(c(
+    2,2,
+    5,8,
+    10,10
+  ),3,2,byrow=TRUE)
+  pos.complement(pos)
+  pos.complement(pos,keep.pos=TRUE)  
+}}

@@ -8,3 +8,13 @@
   Transforms a boolean vector ignore to a pos matrix
 }
 
+\examples{\dontrun{
+  ignore = c(TRUE,FALSE,TRUE,TRUE,FALSE,TRUE,FALSE)
+  ignore.to.pos(ignore)
+  
+  ignore = list(c(TRUE,FALSE,TRUE,TRUE,FALSE,TRUE,FALSE),c(TRUE),c(),c(FALSE,FALSE))
+  ignore.to.pos(ignore)
+  ignore = c(TRUE,FALSE,TRUE,TRUE,FALSE,TRUE,FALSE)
+  ignore.and.complement.pos(ignore)
+  
+}}

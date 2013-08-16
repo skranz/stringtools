@@ -18,3 +18,10 @@ e.g. transforms c("A*",".") into c("\QA*\E","\Q.\E")}
   transforms c("A*",".") into c("\QA*\E","\Q.\E")
 }
 
+\examples{\dontrun{
+  str = c("A.","*")
+  # regexp.fixed transforms strings
+  regexp.fixed(str)
+  # fixed in stringr flags strings instead
+  fixed(str)
+}}

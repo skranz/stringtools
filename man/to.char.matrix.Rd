@@ -9,3 +9,12 @@
   characters
 }
 
+\examples{\dontrun{
+  str =c("Now that is a nice matrix","but short!")
+  mat = to.char.matrix(str)
+  mat
+  char.matrix.to.str(mat)
+  vec = to.char.vector(str,collapse="\n")
+  vec
+  char.vector.to.str(vec,collapse="\n")
+}}

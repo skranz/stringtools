@@ -19,3 +19,19 @@
   Splits string vectors
 }
 
+\examples{\dontrun{
+  str <- c("aes_afe_f", "qwe.rty", "yui0op[3", "b")
+  #split x on the letter e
+  str
+  
+  ignore = c(FALSE,TRUE,TRUE)
+  str.split(str, "e", keep.match=TRUE, ignore=ignore)
+  str.split(str, "e", keep.match=TRUE)
+  
+  str = "abscde3823nsd34"
+  str.split(str, "[a-z]*", fixed=FALSE, keep.match=TRUE)
+  str.split(str, c("[a-z]*","d"), fixed=FALSE, keep.match=TRUE)
+  
+  str = c("abscde3823nsd34","8748274")
+  str.split(str, c("[a-z]*","d"), fixed=FALSE, keep.match=TRUE)
+}}

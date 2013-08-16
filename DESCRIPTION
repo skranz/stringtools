@@ -1,9 +1,9 @@
 Package: stringtools
 Type: Package
-Title: What the package does (short line)
-Version: 0.1.0
+Title: Tools for working with strings in R
+Version: 0.01
 Date: 2013-08-15
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Author: Sebastian Kranz
+Maintainer: Sebastian Kranz <sebastian.kranz@uni-ulm.de>
+Description: Tools for working with strings in R
+License: GPL >= 2.0
