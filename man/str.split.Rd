@@ -2,9 +2,8 @@
 \alias{str.split}
 \title{Splits string vectors}
 \usage{
-  str.split(str, pattern, fixed = TRUE, perl = FALSE,
-    keep.match = FALSE,
-    ncol = c("variable", "like.first")[1], ignore = NULL)
+  str.split(str, pattern, first = FALSE,
+    keep.match = FALSE, ...)
 }
 \arguments{
   \item{str}{a vector of strings}
@@ -22,11 +21,15 @@
 \examples{\dontrun{
   str <- c("aes_afe_f", "qwe.rty", "yui0op[3", "b")
   #split x on the letter e
-  str
-  
-  ignore = c(FALSE,TRUE,TRUE)
-  str.split(str, "e", keep.match=TRUE, ignore=ignore)
+  str  
   str.split(str, "e", keep.match=TRUE)
+  str.split(str, "e", first=TRUE, keep.match=TRUE)
+  
+  str = c("aes_afe_fe")
+  ignore.pos = cbind(1,3)
+  str.split(str, "e", keep.match=TRUE, ignore.pos=ignore.pos)
+  str.split(str, "e", first=TRUE,keep.match=TRUE, ignore.pos=ignore.pos)
+  
   
   str = "abscde3823nsd34"
   str.split(str, "[a-z]*", fixed=FALSE, keep.match=TRUE)

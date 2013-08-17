@@ -4,7 +4,7 @@
 \usage{
   str.locate.first(str, pattern, fixed = TRUE,
     perl = FALSE, ignore = NULL, ignore.pos = NULL,
-    pos.only = NULL)
+    only.pos = NULL)
 }
 \arguments{
   \item{ignore.pos}{a logical vector or logical matrix
@@ -27,7 +27,7 @@
   str.locate.first(c("Hello","What","lol"),"l")
   str.locate.first("Hello",c("l","e"))
   str.locate.first(c("Hello","What","lol"),c("l","g","o"))
-
+  
   
   str = "Hello ernie!"
   ignore = rep(FALSE,max(nchar(str)))

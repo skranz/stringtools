@@ -4,7 +4,7 @@
 \usage{
   str.replace(str, pattern, replacement, fixed = TRUE,
     perl = FALSE, ignore = NULL, ignore.pos = NULL,
-    pos.only = NULL, ignore.pattern = "_IGNORE_", ...)
+    only.pos = NULL, ignore.pattern = "_IGNORE_", ...)
 }
 \arguments{
   \item{str}{the string to replaced}
@@ -26,7 +26,7 @@
   replacement = c("AB","Holla die Waldfee")
   pos = cbind(1,10)
   str.replace(str,pattern,replacement, ignore.pos=pos)
-  str.replace(str,pattern,replacement, pos.only=pos)
+  str.replace(str,pattern,replacement, only.pos=pos)
   str.replace(str,pattern,replacement)
   
   str = "int{5*2}*{2*3}"

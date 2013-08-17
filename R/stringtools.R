@@ -31,6 +31,14 @@ check.str.par = function(str,para) {
   }
 }
 
+
+#' trims whitespaces from string
+#' @export
+str.trim = function(txt) {
+  str_trim(txt)
+}
+
+
 #' strings will be treated as fixed constant in regex 
 #' e.g. transforms c("A*",".") into c("\QA*\E","\Q.\E")
 #'
@@ -89,6 +97,20 @@ examples.merge.lines = test.sep.lines = function() {
   sep.lines(merge)
 }
 			
+#' Returns a logical vector with TRUE for every character of str that is in pos
+#' @export
+str.inpos = function(str,pos) {
+  stopifnot(length(str) == 1)
+  inpos = rep(FALSE,nchar(str))
+  if (length(pos)==0) return(inpos)
+  
+  for (i in 1:NROW(pos)) {
+    inpos[pos[i,1]:pos[i,2]]=TRUE
+  }
+  return(inpos)
+}
+
+
 #' a synonym for nchar
 #' @export
 str.len = function(str) {
@@ -313,15 +335,90 @@ examples.has.substr = function() {
   str.has.substr(str,pattern)  
 }
 
+#' Find substring positions or matches
+#' 
+#' A general wrapper from str.locate.first, str.locate.all, str.extract.first, str.extract.all 
+#' 
+#' @param str vector of strings that will be searched
+#' @param pattern a search pattern
+#' @param fixed if FALSE perform regular expression search
+#' @param first shall only the first element be returned
+#' @param all shall all elements be returned
+#' @param simplify try to simplify a list return
+#' @param matches if FALSE pos will returned, otherwise the extracted substrings
+#' @export
+str.find = function(str, pattern, fixed=TRUE, first=FALSE,all=!first, simplify = TRUE,matches=FALSE,...) {
+  restore.point("str.find")
+  
+  if (length(pattern)==0) {
+    warning(str.find("called without pattern"))
+    stop()
+    return(str)
+  }
+  
+  # Return the found matches instead of the position
+  if (matches) {
+    if (fixed)
+      pattern = fixed(pattern)
+    if (all) {
+      ret = str_extract_all(str,pattern,...)
+    } else {
+      ret = str_extract(str,pattern,...)
+    }
+    if (simplify) {
+      if (length(str)==1) {			
+        if (first) {
+          if (is.na(ret[[1]]))
+            return(character(0)) 
+          return(as.vector(ret[[1]]))
+        }
+        if (NROW(ret[[1]])==0)
+          return(character(0)) 
+        return(ret[[1]])
+      }
+      if (first) {
+        return(ret)
+      }
+    }
+    return(ret)
+  }
+  
+  # Return position of found strings
+  if (fixed)
+    pattern = fixed(pattern)
+  if (all) {
+    ret = str_locate_all(str,pattern,...)
+  } else {
+    ret = str_locate(str,pattern,...)
+  }
+  if (simplify) {
+    if (length(str)==1) {			
+      if (first) {
+        if (is.na(ret[[1]]))
+          return(matrix(NA,nrow=0,ncol=2)) 
+        return(as.vector(ret[[1]]))
+      }
+      if (NROW(ret[[1]])==0)
+        return(matrix(NA,nrow=0,ncol=2)) 
+      return(ret[[1]])
+    }
+    if (first) {
+      return(ret)
+    }
+  }
+  return(ret)
+}
+
+
 #' Finds start and end positions of first substring that matches pattern
 #' @param ignore.pos a logical vector or logical matrix indicating which locations of str shall be ignored in the search
 #' @return single.return is a 1*2 matrix. First column start position, second column end position
 #' @export
-str.locate.first = function(str, pattern, fixed=TRUE, perl=FALSE, ignore =NULL, ignore.pos=NULL,pos.only=NULL) {
+str.locate.first = function(str, pattern, fixed=TRUE, perl=FALSE, ignore =NULL, ignore.pos=NULL,only.pos=NULL) {
   restore.point("str.locate.first")
 
   #print(ignore.pos)
-  ignore = get.ignore(ignore,ignore.pos,pos.only,str=str)
+  ignore = get.ignore(ignore,ignore.pos,only.pos,str=str)
   
   # Return positions of found strings  
   if (is.null(ignore)) {
@@ -377,8 +474,6 @@ str.locate.first = function(str, pattern, fixed=TRUE, perl=FALSE, ignore =NULL, 
 }
 
 
-
-
 examples.str.locate.first = function() {
   
   
@@ -386,7 +481,7 @@ examples.str.locate.first = function() {
   str.locate.first(c("Hello","What","lol"),"l")
   str.locate.first("Hello",c("l","e"))
   str.locate.first(c("Hello","What","lol"),c("l","g","o"))
-
+  
   
   str = "Hello ernie!"
   ignore = rep(FALSE,max(nchar(str)))
@@ -423,6 +518,74 @@ examples.str.locate.first = function() {
   str.detect(str,"[ab]*",fixed=FALSE)  
 }
 
+#' Locate a pattern at the start of strings
+#' @export
+str.locate.at.start = function(str, pattern, fixed=TRUE,...) {
+  restore.point("str.locate.at.start")
+  if (!fixed)
+    stop("Not yet implemented...")
+  len = max(length(str),length(pattern))
+
+  num.char = nchar(pattern)
+  start = substring(str,1,num.char)
+  
+  mat = matrix(NA,len,2)
+  does.start = which(start == pattern)
+  if (length(does.start)==0)
+    return(mat)
+  
+  num.char = rep(num.char, length.out = len)
+  
+  mat[does.start,1] = 1
+  mat[does.start,2] = num.char[does.start]
+
+  return(mat)
+}
+
+examples.str.locate.at.start = function() {  
+  str.locate.at.start(c("0123456012","1230","012012","01bsf"),"012")
+  str.locate.at.start("0123456",c("012","0","1"))
+  str.locate.at.end(c("0123456012","1230","012","01bsf"),"012")
+  
+}
+
+
+#' Locate a pattern at the end of str
+#' @export
+str.locate.at.end = function(str, pattern, fixed=TRUE,...) {
+  restore.point("str.locate.at.end")
+  if (!fixed)
+    stop("Not yet implemented...")
+  len = max(length(str),length(pattern))
+  
+  num.char = nchar(pattern)
+  start = substring(str,nchar(str)-num.char+1,nchar(str))
+  
+  mat = matrix(NA,len,2)
+  does.start = which(start == pattern)
+  if (length(does.start)==0)
+    return(mat)
+  
+  num.char = rep(num.char, length.out = len)
+  
+  mat[does.start,1] = (nchar(str)-num.char+1)[does.start]
+  mat[does.start,2] = nchar(str)[does.start]
+  
+  return(mat)
+}
+
+examples.str.locate.at.end = function() {  
+  str.locate.at.end(c("0123456012","1230","012","01bsf"),"012")  
+}
+
+#' Check if str completely matches a pattern (not just a substring)
+#' @export
+str.matches.pattern = function(str,pattern,...) {
+  if (!fixed)
+    stop("Not yet implemented...")
+  return(str == pattern)
+}
+
 # A helper function
 adapt.ignore.and.get.ci = function(str,ignore) {
   restore.point("adapt.ignore.and.get.ci")
@@ -452,8 +615,12 @@ adapt.ignore.and.get.ci = function(str,ignore) {
 #' @param ignore.pos a logical vector or logical matrix indicating which locations of str shall be ignored in the search
 #' @return a list, of matrices n * 2 matrices. The first column is the start position, second column end position of each match
 #' @export
-str.locate.all = function(str, pattern, fixed=TRUE, perl=FALSE, ignore =NULL) {
+str.locate.all = function(str, pattern, fixed=TRUE, perl=FALSE, ignore =NULL, ignore.pos=NULL,only.pos=NULL) {
   restore.point("str.locate.all")
+
+  #print(ignore.pos)
+  ignore = get.ignore(ignore,ignore.pos,only.pos,str=str)
+  
   
   if (is.null(ignore)) {
     if (fixed) {
@@ -487,10 +654,9 @@ str.locate.all = function(str, pattern, fixed=TRUE, perl=FALSE, ignore =NULL) {
   
   # Some char positions can be ignored
   # Adapt positions to true positions
-  
   if (length(str)==1 & length(pattern)>0)
     str = rep(str,length(pattern))
-  if (length(str)==1 & !is.matrix(ignore))
+  if (length(str)==1 & is.matrix(ignore))
     str = rep(str,NROW(ignore))
   
   ret = adapt.ignore.and.get.ci(str,ignore)
@@ -523,7 +689,9 @@ examples.str.locate.all = function() {
   ignore = rep(FALSE,max(nchar(str)))
   ignore[c(2:4)] = TRUE  
   str.locate.all(str,"1",ignore=ignore)
-
+  ignore.pos = rbind(c(2,4))
+  str.locate.all(str,"1",ignore.pos=ignore.pos)
+  
   str.locate.all(str,c("1","b","a"),ignore=ignore)
   
   str = c("0120121")
@@ -619,13 +787,27 @@ examples.extract.all = function() {
   return(ret)
 }
 
+#' Returns the number of matches of pattern in each element of str
+str.number.matches = function(str, pattern,...) {
+  res = str.locate.all(str,pattern,...)
+  sapply(res,NROW)  
+}
+
+#' An alternative interface to str.split
+#' @export
+str.tokenize = function(str,split=" ",only.one.split=FALSE,simplify=TRUE,...) {
+  ret = str.split(str,split,first=only.one.split,simplify=simplify,...)
+  if (simplify & is.list(ret))
+    ret = unlist(ret)
+  return(ret)
+}
 
 #' Splits string vectors
 #' @param str a vector of strings
 #' @param pattern vector where splits take place
 #' @return A list with same length as str. Each list element i contains the split substrings from str[i]
 #' @export
-str.split = function(str,pattern, fixed=TRUE,perl=FALSE, keep.match = FALSE,ncol=c("variable","like.first")[1], ignore=NULL) {
+str.split = function(str,pattern, first=FALSE, keep.match = FALSE,...) {
 	restore.point("str.split")
 	#rerestore.point("str.split")
   
@@ -635,24 +817,28 @@ str.split = function(str,pattern, fixed=TRUE,perl=FALSE, keep.match = FALSE,ncol
 	if (length(str)==1)
 	  str = rep(str,length.out=length(pattern))
 	
-  if (ncol=="variable") {
-    
-    pos = str.locate.all(str=str,pattern=pattern,fixed=fixed,perl=perl, ignore=ignore)
-    #str.match.all(str=str,pattern=pattern,fixed=fixed,perl=perl, ignore=ignore)
-    return(str.split.at.pos(str,pos,keep.pos=keep.match))
+  if (first) {
+    pos = str.locate.first(str=str,pattern=pattern,...)
+    return(str.split.at.pos(str,pos,keep.pos=keep.match))    
   } else {
-	  stop("Fixed col length, not yet implemented!")
+    pos = str.locate.all(str=str,pattern=pattern,...)
+    restore.point("jhhshf")
+    return(str.split.at.pos(str,pos,keep.pos=keep.match))
   }
 }
                     
 examples.str.split = function() {
   str <- c("aes_afe_f", "qwe.rty", "yui0op[3", "b")
   #split x on the letter e
-  str
-  
-  ignore = c(FALSE,TRUE,TRUE)
-  str.split(str, "e", keep.match=TRUE, ignore=ignore)
+  str  
   str.split(str, "e", keep.match=TRUE)
+  str.split(str, "e", first=TRUE, keep.match=TRUE)
+  
+  str = c("aes_afe_fe")
+  ignore.pos = cbind(1,3)
+  str.split(str, "e", keep.match=TRUE, ignore.pos=ignore.pos)
+  str.split(str, "e", first=TRUE,keep.match=TRUE, ignore.pos=ignore.pos)
+  
   
   str = "abscde3823nsd34"
   str.split(str, "[a-z]*", fixed=FALSE, keep.match=TRUE)
@@ -720,7 +906,7 @@ str.replace.at.pos = function(str,pos,new,pos.mat.like.list=FALSE) {
 
 examples.str.replace.at.pos = function() {
   str = "1234567890"
-  pos = rbind(c(7,10),c(4,5))
+  pos = rbind(c(7,7),c(4,5))
   new = c("XXX","...")
   str.replace.at.pos(str,pos,new)
   
@@ -735,7 +921,6 @@ examples.has.substr = function() {
   str.has.substr(str,pattern)  
 }
 
-
 #' Replaces in str every occurence of pattern by replacement
 #' 
 #' @param str the string to replaced
@@ -743,7 +928,7 @@ examples.has.substr = function() {
 #' @param replacment the new substrings
 #' @return a string
 #' @export
-str.replace = function(str,pattern,replacement,fixed=TRUE,perl=FALSE,ignore=NULL, ignore.pos=NULL, pos.only=NULL,ignore.pattern="_IGNORE_",...) {
+str.replace = function(str,pattern,replacement,fixed=TRUE,perl=FALSE,ignore=NULL, ignore.pos=NULL, only.pos=NULL,ignore.pattern="_IGNORE_",...) {
   restore.point("str.replace")
   len = max(length(str),length(pattern),length(replacement)) 
   if (len > 1) {
@@ -751,13 +936,13 @@ str.replace = function(str,pattern,replacement,fixed=TRUE,perl=FALSE,ignore=NULL
       str.replace(str[min(length(str),i)],
                   pattern[min(length(pattern),i)],
                   replacement[min(length(replacement),i)],
-                  fixed, perl,ignore,ignore.pos,pos.only,...)
+                  fixed, perl,ignore,ignore.pos,only.pos,...)
     },...)
     return(ret)
   }  
   restore.point("str.replace.single")
   
-  pos = ignore.and.complement.pos(ignore,ignore.pos,pos.only)  
+  pos = ignore.and.complement.pos(ignore,ignore.pos,only.pos)  
   is.ignore = attr(pos,"is.ignore")
   if (sum(is.ignore)>0) {
     if (has.substr(pattern,ignore.pattern)) {        
@@ -806,7 +991,7 @@ examples.str.replace = function() {
   replacement = c("AB","Holla die Waldfee")
   pos = cbind(1,10)
   str.replace(str,pattern,replacement, ignore.pos=pos)
-  str.replace(str,pattern,replacement, pos.only=pos)
+  str.replace(str,pattern,replacement, only.pos=pos)
   str.replace(str,pattern,replacement)
   
   str = "int{5*2}*{2*3}"
@@ -814,6 +999,244 @@ examples.str.replace = function() {
   replacement = "integer{_IGNORE_}"  
   pos = cbind(c(5,11),c(7,13))
   str.replace(str,pattern,replacement, ignore.pos=pos)
+}
+
+#' Performs sequentially all replacements of pattern and replace on the same strings str
+#' 
+#' A very slow implementation
+str.replace.list = function(str,pattern,replacement,...) {
+  restore.point("str.replace.list")
+  for (i in 1:NROW(pattern)) {
+    str = str.replace(str,pattern[i],replacement[i],...)
+  }
+  return(str)
+#   did.collapse = FALSE
+#   if (NROW(str)>1) {
+#     did.collapse = TRUE
+#     str = paste(str,collapse=collapse)
+#   }
+#   pattern = regexp.or(pattern)
+#   pos = str.find(str,pattern,fixed=FALSE,simplify=TRUE)
+#   matches = str.substr(str,pos[,1],pos[,2])
+#   match.ind = match(matches,pattern)
+#   str = str.replace.at.pos(str,pos,pattern[match.ind])
+#   if (did.collapse)
+#     str = sep.lines(str,collapse)
+#   if (!return.matches) {
+#     return(str)
+#   } else {
+#     return(list(str=str,matches = matches, replaces=pattern[match.ind]))
+#   }
+}
+
+examples.str.replace.list = function() {
+  str.replace.list("na dies ist doch",c("a","e"),c("A","E"))
+}
+
+show.blocks = function(blocks, str) {
+  data.frame(lev=blocks$levels, out.l=blocks$outer[,1], out.r = blocks$outer[,2],
+                  in.l=blocks$inner[,1],in.r = blocks$inner[,2], str = substring(str,blocks$outer[,1],blocks$outer[,2]) )
+}
+
+show.pos = function(pos,str) {
+  if (NROW(pos)==0)
+    return(pos)
+  data.frame(left=pos[,1],right=pos[,2], str = substring(str,pos[,1],pos[,2]) )  
+}
+
+
+# Helper function for str.replace.by.blocks
+# an island is a region corresponding to the interior of one block
+# an island has i) mountains: sub regions with level above the islands level
+#               ii) plains  : the pos.complement to mountains within the island
+replace.island = function(island.row, str,blocks, pattern.plains, level,pattern.number.mountains,replacement,...) {
+  restore.point("replace.island")
+  
+  left = blocks$inner[island.row,1]
+  right = blocks$inner[island.row,2]
+  island.str = substring(str,left,right)
+  
+  mountains= blocks$inner[
+    which(blocks$levels == level+1
+          & blocks$inner[,1]>=left
+          & blocks$inner[,2]<=right),,drop=FALSE]
+  plains = pos.complement(mountains, start=left, end=right)
+  
+  
+  show.blocks(blocks,str)
+  island.row
+  
+  show.pos(cbind(left,right),str)    
+  show.pos(mountains,str)    
+  show.pos(plains,str)    
+  
+  plains.str = str.at.pos(str,plains)
+  
+  # The island has not enough plains to match the pattern
+  if (length(plains.str)<length(pattern.plains))
+    return(list(replaced=FALSE,new=island.str,old=island.str))
+  
+  # Pattern has no mountains, i.e. we simply ignore the mountains in the replacement
+  if (length(pattern.plains)==1) {
+    ignore.pos = cbind(mountains-left+1)
+    new.island.str = str.replace(island.str, pattern.plains,ignore.pos = ignore.pos,...)
+    return(list(replaced= new.island.str!=island.str,new.island.str,island.str))
+  }
+  
+  # We have an island with mountains. We search for matching chains of plains
+  
+  # Search through the different pattern plains
+
+  # Starting plain: must match at end
+  i = 1  
+  first.pos = str.locate.at.end(plains.str,pattern.plains[i])
+  matches = !is.na(first.pos[,1])
+  
+  if (sum(matches)==0)
+    return(list(replaced=FALSE,new=island.str,old=island.str))
+  
+  # Center plains,must match completely
+  if (length(pattern.plains)>2) {
+    for (i in 2:(length(pattern.plains)-1)) {
+      #new.matches = str.matches.pattern(plains.str[-(1:(i-1))], pattern.plains[i],...)
+      new.matches = str.matches.pattern(plains.str[-(1:(i-1))], pattern.plains[i])
+      matches = matches & c(new.matches,rep(FALSE,i-1))
+    }      
+  }
+  
+  # The last plain must match at the start
+  i = length(pattern.plains)    
+  # Starting plain: must match at end
+  last.pos = str.locate.at.start(plains.str,pattern.plains[i])
+  matches = matches & c(!is.na(last.pos[,1])[-(1:(i-1))], rep(FALSE,i-1))
+  
+  if (sum(matches)==0)
+    return(list(replaced=FALSE,new=island.str,old=island.str))
+  
+  # We have found matches to be replaced
+  start.with.mountain = plains[1,1]>mountains[1,1]
+  mountains.str = str.at.pos(str,mountains)
+  nm = pattern.number.mountains
+  np =length(pattern.plains)
+  
+  # The following loop construction rules out overlapping replacements
+  counter = 0
+  new.str = NULL
+  replace.pos = matrix(NA,0,2)
+  match.ind = 1
+  while (match.ind <= length(matches)-np+1) {
+    #message("replace.island(match.ind=",match.ind,")")
+    match.ind = which(matches & match.ind <= 1:length(matches) )[1]
+    new.str = c(new.str,
+                str.replace.list(replacement,
+                                 pattern=paste0("_",sub.txt,1:nm,"_"),
+                                 replacement=mountains.str[(match.ind:(match.ind+nm))+start.with.mountain])
+    )
+    
+    #plains.str[match.ind+np-1]
+    replace.left = plains[match.ind,1] + first.pos[match.ind,1]-left
+    replace.right = plains[match.ind+np-1,1] + last.pos[match.ind+np-1,2]-left
+    replace.pos = rbind(replace.pos,c(replace.left,replace.right))
+    #show.pos(replace.pos,str)
+    match.ind = match.ind + np      
+  }
+  show.pos(replace.pos, island.str)
+  new.island.str = str.replace.at.pos(island.str,replace.pos, new.str)
+  return(list(replaced=TRUE,new=new.island.str,old=island.str))
+}
+
+#' Helper function
+adapt.pos.after.replace = function(pos,left,len.old,len.new) {
+  if (length(left)>1) {
+    for (i in seq_along(left)) {
+      pos = adapt.pos.after.replace(pos,left[i],len.old[i],len.new[i])
+    }
+    return(pos)
+  }
+  restore.point("adapt.pos.after.replace")
+  right = left + len.old-1
+  delta.len = len.new-len.old
+  
+  rows = pos[,1]>left
+  pos[rows,1] = pos[rows,1]+delta.len
+  rows = pos[,2]>left
+  pos[rows,2] = pos[rows,2]+delta.len
+  return(pos)
+}
+
+#' Helper function
+adapt.blocks.after.replace = function(block,...) {
+  block$inner = adapt.pos.after.replace(block$inner,...)
+  block$outer = adapt.pos.after.replace(block$outer,...)
+  return(block)
+}
+
+
+#' Replaces in str every occurence of pattern by replacement
+#' 
+#' @param str the string to replaced
+#' @param pattern the substring to be replaced
+#' @param replacment the new substrings
+#' @param block a block retrieved from str.block.pos alternatively, you can provide block.start and block.end
+#' @param block.start string with which the blocks start, e.g. "("
+#' @param block.end string with which the blocks end, e.g. ")"
+#' @return a string
+#' @export
+str.replace.by.blocks = function(str,pattern,replacement,blocks=NULL,sub.txt="SUB",block.start, block.end,block.ignore=NULL,use.levels=NULL,...) {
+  restore.point("str.replace.by.level")
+  library(data.table)
+  
+  if (is.null(blocks))
+    blocks = str.blocks.pos(str, start=block.start, end=block.end, ignore=block.ignore)
+    
+  if (length(blocks$levels)==0) {
+    blocks = blocks.add.level.0(blocks,str)
+  } else if ( blocks$levels[1]!=0) {
+    blocks = blocks.add.level.0(blocks,str)    
+  }
+  
+  
+  show.blocks(blocks,str)
+  levels = blocks$levels
+  if (is.null(use.levels))
+    use.levels = unique(levels)
+
+  sub.pattern = paste0("_",sub.txt,"_")
+  
+  # Splitt pattern in different parts before and after ignore
+  pattern.plains = str.at.pos(pattern,
+          pos.complement(str_locate_all(pattern,sub.pattern)[[1]], str=pattern))
+  
+  pattern.number.mountains = str.number.matches(pattern,sub.pattern,fixed=TRUE)
+  
+  level = 0
+  old.str = str
+  old.blocks = blocks
+  for (level in rev(use.levels)) {    
+    #message("level = ", level)
+    island.rows = which(levels==level) 
+    #ret =lapply(island.rows,replace.island,str=str,blocks=blocks, pattern.plains=pattern.plains, level=level,pattern.number.mountains=pattern.number.mountains,replacement=replacement,...)
+    
+    ret =lapply(island.rows,replace.island,str=str,blocks=blocks, pattern.plains=pattern.plains, level=level,pattern.number.mountains=pattern.number.mountains,replacement=replacement)
+    
+    df = data.frame(rbindlist(ret),island.rows)
+    df = df[df[,"replaced"],]
+    
+    str = str.replace.at.pos(str,blocks$inner[df$island.rows,,drop=FALSE],df$new)
+    blocks = adapt.blocks.after.replace(blocks,left=blocks$inner[df$island.rows,],len.old=nchar(df$old),len.new=nchar(df$new)) 
+    show.blocks(blocks,str)
+    
+  }
+  
+  return(str)
+}
+
+#' Add level 0 to blocks
+blocks.add.level.0 = function(blocks,str,end=nchar(str)) {
+  blocks$inner = rbind(c(1,end),blocks$inner)
+  blocks$outer = rbind(c(1,end),blocks$outer)
+  blocks$levels = c(0,blocks$levels)
+  return(blocks)
 }
 
 #' Returns a pos matrix indicating blocks like brackets ( ) or quoted parts "text"
@@ -844,16 +1267,19 @@ str.blocks.pos= function(str, start, end,
     }
     
     n = NROW(start.pos)
-    pos.level = rep(NA,n)
+    if (n==0)
+      return(list(inner=start.pos, outer=start.pos, levels=c()))
+    
+    pos.levels = rep(NA,n)
     
     # Compute level
     all = c(start.pos[,2],end.pos[,1])
     ord = order(all)
     ind = c(1:n,1:n)[ord]
     open = c(rep(1,n),rep(-1,n))[ord]
-    level = cumsum(open)
+    levels = cumsum(open)
     
-    pos.level[ind[open==1]] = level[open==1] 
+    pos.levels[ind[open==1]] = levels[open==1] 
 
     #Highly inefficient, should write C code here
     end.ord = rep(NA,n)
@@ -865,9 +1291,9 @@ str.blocks.pos= function(str, start, end,
       end.ord[i]=ind
     }
     end.pos[end.ord,] = end.pos
-    return(list(inner=cbind(start.pos[,2],end.pos[,1]),
-                outer=cbind(start.pos[,1],end.pos[,2]),
-                level=pos.level))
+    return(list(outer=cbind(start.pos[,1],end.pos[,2]),
+                inner=cbind(start.pos[,2]+1,end.pos[,1]-1),
+                levels=pos.levels))
     
   # Blocks like "" ''
   } else {
@@ -882,9 +1308,9 @@ str.blocks.pos= function(str, start, end,
       
 			return(list(inner=cbind(start.pos[,2]+1,end.pos[,1]-1),
 			            outer=cbind(start.pos[,1],end.pos[,2]),
-			            level=rep(1,n)))
+			            levels=rep(1,n)))
 		} else {
-		  return(list(inner=start.pos, outer=start.pos, level=c()))
+		  return(list(inner=start.pos, outer=start.pos, levels=c()))
 		}
   }
 }

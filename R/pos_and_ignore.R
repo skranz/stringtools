@@ -11,14 +11,21 @@ pos.vec.as.matrix = function(pos) {
 
 #' Returns a pos matrix combined with its complement. The matrix has an attribute "complement" which is a logical vector indicating whether a row in the matrix is the original matrix or a complement
 #' @export
-pos.with.complement = function(pos, is.sorted=FALSE) {
-  pos.complement(pos,is.sorted,keep.pos=TRUE)
+pos.with.complement = function(pos, is.sorted=FALSE, end=NULL) {
+  restore.point("pos.with.complement")
+  pos.complement(pos,is.sorted,keep.pos=TRUE,end=end)
 }
 
 #' Returns the complement of a pos matrix again as a pos matrix
 #' @export
-pos.complement = function(pos, is.sorted=FALSE,end=1000000L, keep.pos = FALSE) {
+pos.complement = function(pos, is.sorted=FALSE,start=1,end=NULL, keep.pos = FALSE,str=NULL) {
   restore.point("pos.complement")
+  if (is.null(end))
+    if (!is.null(str)) {
+      end = nchar(str)
+    } else {
+      end = 1000000L
+    }
   
   pos = pos.vec.as.matrix(pos)
   if (!is.sorted) {
@@ -27,13 +34,15 @@ pos.complement = function(pos, is.sorted=FALSE,end=1000000L, keep.pos = FALSE) {
   
   # Convert to C code to speed up
   
-  if (NROW(pos)==0)
-    return(matrix(c(1,end),1,2))
-  
+  if (NROW(pos)==0) {
+    mat = matrix(c(start,end),1,2)
+    attr(mat,"complement")<-TRUE
+    return(mat)
+  }
   compl = matrix(0,nrow(pos)+1,2)
   
   row.compl = 0 # 0
-  last.left = 1
+  last.left = start
   for (i in 1:NROW(pos)) {
     if (pos[i,1]>last.left) {
       row.compl = row.compl+1
@@ -78,7 +87,7 @@ examples.pos.with.complement = function() {
 
 #' Gets a logical ignore vector or list from pos matrices
 #' @export
-get.ignore = function(ignore=NULL,ignore.pos=NULL,pos.only=NULL, end=NULL, str=NULL) {
+get.ignore = function(ignore=NULL,ignore.pos=NULL,only.pos=NULL, end=NULL, str=NULL) {
   restore.point("get.ignore")
   if (!is.null(ignore)) {
     return(ignore)
@@ -86,8 +95,8 @@ get.ignore = function(ignore=NULL,ignore.pos=NULL,pos.only=NULL, end=NULL, str=N
   if (!is.null(ignore.pos)) {
     return(pos.to.ignore(ignore.pos,end=end,str=str))
   }
-  if (!is.null(pos.only)) {
-    return(pos.to.ignore(pos.only,end=end,str=str,complement=TRUE))
+  if (!is.null(only.pos)) {
+    return(pos.to.ignore(only.pos,end=end,str=str,complement=TRUE))
   }
   return(NULL)
 }
@@ -96,12 +105,12 @@ get.ignore = function(ignore=NULL,ignore.pos=NULL,pos.only=NULL, end=NULL, str=N
 #' 
 #' @return A list first element is the pos and complement matrix. The second element is a vector
 #' @export
-ignore.and.complement.pos = function(ignore=NULL,ignore.pos=NULL,pos.only=NULL) {
-  if (is.list(ignore) | is.list(ignore.pos) | is.list(pos.only) ) {
+ignore.and.complement.pos = function(ignore=NULL,ignore.pos=NULL,only.pos=NULL) {
+  if (is.list(ignore) | is.list(ignore.pos) | is.list(only.pos) ) {
     stop("Vectorization not yet implemented")
     return(lapply(ignore,ignore.and.complement.pos))
   }
-  
+  restore.point("ignore.and.complement.pos")
   ig.pos = NULL
   if (!is.null(ignore)) {
     pos = ignore.to.pos(ignore)
@@ -112,8 +121,8 @@ ignore.and.complement.pos = function(ignore=NULL,ignore.pos=NULL,pos.only=NULL) 
     ig.pos = pos.with.complement(ignore.pos)
     attr(ig.pos,"is.ignore") = !attr(ig.pos,"complement")
   }
-  if (!is.null(pos.only)) {
-    ig.pos = pos.with.complement(pos.only)
+  if (!is.null(only.pos)) {
+    ig.pos = pos.with.complement(only.pos)
     attr(ig.pos,"is.ignore") = attr(ig.pos,"complement")
   }
   ig.pos  
@@ -161,18 +170,22 @@ examples.ignore.to.pos = function() {
 #' Warning length is not
 #' @export 
 pos.to.ignore = function(pos, end=1000000L,complement=FALSE, str=NULL) {
+  restore.point("pos.to.ignore")
+  
   if (is.list(pos)) {
     return(lapply(1:i,function(i) {
       pos.to.ignore(pos[[i]],end=end[min(i,length(end))],complement=complement,str=str[min(i,length(str))])
     }))
   }
+  restore.point("pos.to.ignore.single")
+  
   if (!is.null(str))
-      end = length(str)
+      end = max(nchar(str))
   ignore = rep(FALSE,end)
   if (NROW(pos)==0)
     return(ignore)
   for (i in 1:NROW(pos)) {
-    ignore[pos[i,1]:pos[i,2]] = FALSE
+    ignore[pos[i,1]:pos[i,2]] = TRUE
   }
   return(ignore)
 }
@@ -197,7 +210,8 @@ examples.cumsum.ignore = function() {
 }
 
 
-
+#'
+#' @export
 combine.pos.list.and = function(pos.list,return.ind=TRUE) {
   restore.point("combine.pos.list.and")
   
@@ -239,7 +253,8 @@ combine.pos.list.and = function(pos.list,return.ind=TRUE) {
 # pos3 = rbind(c(106,107),c(5,9),c(17,18))
 # combine.pos.list.and(list(pos1,pos2,pos3))
 
-
+#'
+#' @export
 combine.pos.and = function(pos1,pos2,return.ind=FALSE) {
   restore.point("combine.pos.and")
   #rerestore.point("combine.pos.and")

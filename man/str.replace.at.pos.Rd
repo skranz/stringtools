@@ -24,7 +24,7 @@
 
 \examples{\dontrun{
   str = "1234567890"
-  pos = rbind(c(7,10),c(4,5))
+  pos = rbind(c(7,7),c(4,5))
   new = c("XXX","...")
   str.replace.at.pos(str,pos,new)
   

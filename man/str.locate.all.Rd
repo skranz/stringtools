@@ -3,7 +3,7 @@
 \title{Finds start and end positions of all substrings that match pattern}
 \usage{
   str.locate.all(str, pattern, fixed = TRUE, perl = FALSE,
-    ignore = NULL)
+    ignore = NULL, ignore.pos = NULL, only.pos = NULL)
 }
 \arguments{
   \item{ignore.pos}{a logical vector or logical matrix
@@ -29,7 +29,9 @@
   ignore = rep(FALSE,max(nchar(str)))
   ignore[c(2:4)] = TRUE  
   str.locate.all(str,"1",ignore=ignore)
-
+  ignore.pos = rbind(c(2,4))
+  str.locate.all(str,"1",ignore.pos=ignore.pos)
+  
   str.locate.all(str,c("1","b","a"),ignore=ignore)
   
   str = c("0120121")
