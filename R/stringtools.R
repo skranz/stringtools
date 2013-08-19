@@ -2,7 +2,7 @@
 # #' 
 # #' @name stringtools-package
 # #' @docType package
-# #' @author Sebastian Kranz \email{sebkranz@gmail.com}
+# #' @author Sebastian Kranz \email{sebkranz@@gmail.com}
 
 
 #' pos can be a 
@@ -520,7 +520,7 @@ examples.str.locate.first = function() {
 
 #' Locate a pattern at the start of strings
 #' @export
-str.locate.at.start = function(str, pattern, fixed=TRUE,...) {
+str.locate.at.start = function(str, pattern, fixed=TRUE) {
   restore.point("str.locate.at.start")
   if (!fixed)
     stop("Not yet implemented...")
@@ -552,7 +552,7 @@ examples.str.locate.at.start = function() {
 
 #' Locate a pattern at the end of str
 #' @export
-str.locate.at.end = function(str, pattern, fixed=TRUE,...) {
+str.locate.at.end = function(str, pattern, fixed=TRUE) {
   restore.point("str.locate.at.end")
   if (!fixed)
     stop("Not yet implemented...")
@@ -580,7 +580,7 @@ examples.str.locate.at.end = function() {
 
 #' Check if str completely matches a pattern (not just a substring)
 #' @export
-str.matches.pattern = function(str,pattern,...) {
+str.matches.pattern = function(str,pattern,fixed=TRUE) {
   if (!fixed)
     stop("Not yet implemented...")
   return(str == pattern)
@@ -796,7 +796,7 @@ str.number.matches = function(str, pattern,...) {
 #' An alternative interface to str.split
 #' @export
 str.tokenize = function(str,split=" ",only.one.split=FALSE,simplify=TRUE,...) {
-  ret = str.split(str,split,first=only.one.split,simplify=simplify,...)
+  ret = str.split(str,split,first=only.one.split,...)
   if (simplify & is.list(ret))
     ret = unlist(ret)
   return(ret)
@@ -929,7 +929,7 @@ examples.has.substr = function() {
 #' @return a string
 #' @export
 str.replace = function(str,pattern,replacement,fixed=TRUE,perl=FALSE,ignore=NULL, ignore.pos=NULL, only.pos=NULL,ignore.pattern="_IGNORE_",...) {
-  restore.point("str.replace")
+  #restore.point("str.replace")
   len = max(length(str),length(pattern),length(replacement)) 
   if (len > 1) {
     ret = sapply(1:len, function (i,...) {
@@ -1004,6 +1004,7 @@ examples.str.replace = function() {
 #' Performs sequentially all replacements of pattern and replace on the same strings str
 #' 
 #' A very slow implementation
+#' @export
 str.replace.list = function(str,pattern,replacement,...) {
   restore.point("str.replace.list")
   for (i in 1:NROW(pattern)) {
@@ -1049,7 +1050,7 @@ show.pos = function(pos,str) {
 # an island is a region corresponding to the interior of one block
 # an island has i) mountains: sub regions with level above the islands level
 #               ii) plains  : the pos.complement to mountains within the island
-replace.island = function(island.row, str,blocks, pattern.plains, level,pattern.number.mountains,replacement,...) {
+replace.island = function(island.row, str,blocks, pattern.plains, level,pattern.number.mountains,replacement,sub.txt,fixed=TRUE) {
   restore.point("replace.island")
   
   left = blocks$inner[island.row,1]
@@ -1079,7 +1080,7 @@ replace.island = function(island.row, str,blocks, pattern.plains, level,pattern.
   # Pattern has no mountains, i.e. we simply ignore the mountains in the replacement
   if (length(pattern.plains)==1) {
     ignore.pos = cbind(mountains-left+1)
-    new.island.str = str.replace(island.str, pattern.plains,ignore.pos = ignore.pos,...)
+    new.island.str = str.replace(island.str, pattern.plains,ignore.pos = ignore.pos,fixed=fixed)
     return(list(replaced= new.island.str!=island.str,new.island.str,island.str))
   }
   
@@ -1089,7 +1090,7 @@ replace.island = function(island.row, str,blocks, pattern.plains, level,pattern.
 
   # Starting plain: must match at end
   i = 1  
-  first.pos = str.locate.at.end(plains.str,pattern.plains[i])
+  first.pos = str.locate.at.end(plains.str,pattern.plains[i],fixed=fixed)
   matches = !is.na(first.pos[,1])
   
   if (sum(matches)==0)
@@ -1098,8 +1099,7 @@ replace.island = function(island.row, str,blocks, pattern.plains, level,pattern.
   # Center plains,must match completely
   if (length(pattern.plains)>2) {
     for (i in 2:(length(pattern.plains)-1)) {
-      #new.matches = str.matches.pattern(plains.str[-(1:(i-1))], pattern.plains[i],...)
-      new.matches = str.matches.pattern(plains.str[-(1:(i-1))], pattern.plains[i])
+      new.matches = str.matches.pattern(plains.str[-(1:(i-1))], pattern.plains[i],fixed=fixed)
       matches = matches & c(new.matches,rep(FALSE,i-1))
     }      
   }
@@ -1107,7 +1107,7 @@ replace.island = function(island.row, str,blocks, pattern.plains, level,pattern.
   # The last plain must match at the start
   i = length(pattern.plains)    
   # Starting plain: must match at end
-  last.pos = str.locate.at.start(plains.str,pattern.plains[i])
+  last.pos = str.locate.at.start(plains.str,pattern.plains[i],fixed=fixed)
   matches = matches & c(!is.na(last.pos[,1])[-(1:(i-1))], rep(FALSE,i-1))
   
   if (sum(matches)==0)
@@ -1180,14 +1180,16 @@ adapt.blocks.after.replace = function(block,...) {
 #' @param block a block retrieved from str.block.pos alternatively, you can provide block.start and block.end
 #' @param block.start string with which the blocks start, e.g. "("
 #' @param block.end string with which the blocks end, e.g. ")"
+#' @param only.replace.smaller.than if not NULL only replaces matches whose number of characters is less or equal to only.replace.smaller.than
+#' @param only.replace.larger.than if not NULL only replaces matches whose number of characters is bigger or equal to only.replace.larger.than
 #' @return a string
 #' @export
-str.replace.by.blocks = function(str,pattern,replacement,blocks=NULL,sub.txt="SUB",block.start, block.end,block.ignore=NULL,use.levels=NULL,...) {
+str.replace.by.blocks = function(str,pattern,replacement,blocks=NULL,sub.txt="SUB",block.start, block.end,block.ignore=NULL,use.levels=NULL,fixed=TRUE, only.replace.smaller.than=NULL, only.replace.larger.than=NULL) {
   restore.point("str.replace.by.level")
   library(data.table)
   
   if (is.null(blocks))
-    blocks = str.blocks.pos(str, start=block.start, end=block.end, ignore=block.ignore)
+    blocks = str.blocks.pos(str, start=block.start, end=block.end, ignore=block.ignore, fixed=fixed)
     
   if (length(blocks$levels)==0) {
     blocks = blocks.add.level.0(blocks,str)
@@ -1214,13 +1216,16 @@ str.replace.by.blocks = function(str,pattern,replacement,blocks=NULL,sub.txt="SU
   old.blocks = blocks
   for (level in rev(use.levels)) {    
     #message("level = ", level)
-    island.rows = which(levels==level) 
-    #ret =lapply(island.rows,replace.island,str=str,blocks=blocks, pattern.plains=pattern.plains, level=level,pattern.number.mountains=pattern.number.mountains,replacement=replacement,...)
-    
-    ret =lapply(island.rows,replace.island,str=str,blocks=blocks, pattern.plains=pattern.plains, level=level,pattern.number.mountains=pattern.number.mountains,replacement=replacement)
+    island.rows = which(levels==level)     
+    ret =lapply(island.rows,replace.island,str=str,blocks=blocks, pattern.plains=pattern.plains, level=level,pattern.number.mountains=pattern.number.mountains,replacement=replacement,fixed=fixed,sub.txt=sub.txt)
     
     df = data.frame(rbindlist(ret),island.rows)
     df = df[df[,"replaced"],]
+    if (!is.null(only.replace.larger.than))
+      df = df[nchar(df$old)>=only.replace.larger.than,]
+    if (!is.null(only.replace.smaller.than))
+      df = df[nchar(df$old)<=only.replace.smaller.than,]
+    
     
     str = str.replace.at.pos(str,blocks$inner[df$island.rows,,drop=FALSE],df$new)
     blocks = adapt.blocks.after.replace(blocks,left=blocks$inner[df$island.rows,],len.old=nchar(df$old),len.new=nchar(df$new)) 
@@ -1230,6 +1235,22 @@ str.replace.by.blocks = function(str,pattern,replacement,blocks=NULL,sub.txt="SU
   
   return(str)
 }
+
+
+examples.str.replace.by.blocks = function() {
+  # Replace latex fractions
+  str = "5+\\frac{x^2+x^2}{1+\\frac{2}{x*5}}*2"
+  str.replace.by.blocks(str,"\\frac{_SUB_}{_SUB_}","(_SUB1_)/(_SUB2_)",
+                        block.start = "{", block.end = "}")  
+  str.replace.by.blocks(str,"\\frac{_SUB_}{_SUB_}","(_SUB1_)/(_SUB2_)",
+                        block.start = "{", block.end = "}",
+                        only.replace.larger.than=20)  
+  str.replace.by.blocks(str,"\\frac{_SUB_}{_SUB_}","(_SUB1_)/(_SUB2_)",
+                        block.start = "{", block.end = "}",
+                        only.replace.smaller.than=20)  
+  
+}
+
 
 #' Add level 0 to blocks
 blocks.add.level.0 = function(blocks,str,end=nchar(str)) {
@@ -1252,13 +1273,10 @@ str.blocks.pos= function(str, start, end,
   if (length(str) > 1)
     stop("Not yet implemented for vectors of strings")
   
-  if (fixed.start) start = fixed(start)
-  if (fixed.end) end = fixed(end)
-  
   # Blocks like (),{},[], begin end, ...
   if (start != end) {
-    start.pos = str.locate.all(str, start, ignore=ignore.start)[[1]]
-    end.pos   = str.locate.all(str, end, ignore=ignore.end)[[1]]
+    start.pos = str.locate.all(str, start, ignore=ignore.start,fixed=fixed.start)[[1]]
+    end.pos   = str.locate.all(str, end, ignore=ignore.end,fixed=fixed.start)[[1]]
     # Validity check
     if (NROW(start.pos) != NROW(end.pos)) {
 			print(paste("Error when finding ",start,end, "block in"))
@@ -1297,18 +1315,18 @@ str.blocks.pos= function(str, start, end,
     
   # Blocks like "" ''
   } else {
-    pos = str.locate.all(str, start, ignore=ignore.start)[[1]]
-    n = length(pos)
+    pos = str.locate.all(str, start, ignore=ignore.start, fixed=fixed)[[1]]
+    n = NROW(pos)
 		
 		if (n>0) {
 			if ((n %% 2) != 0)
 				stop(paste("Number of block starts and ends differs! Need even number of not ignored", start))
-			start.pos = pos[seq(1,n,by=2),]
-			end.pos = pos[seq(2,n,by=2),]
+			start.pos = pos[seq(1,n,by=2),,drop=FALSE]
+			end.pos = pos[seq(2,n,by=2),,drop=FALSE]
       
 			return(list(inner=cbind(start.pos[,2]+1,end.pos[,1]-1),
 			            outer=cbind(start.pos[,1],end.pos[,2]),
-			            levels=rep(1,n)))
+			            levels=rep(1,n/2)))
 		} else {
 		  return(list(inner=start.pos, outer=start.pos, levels=c()))
 		}
@@ -1320,4 +1338,5 @@ examples.str.blocks.pos = function() {
   str = '1+(5*(2+3)+(2+(4-1)))'
 #        123456789012345678901  
   str.blocks.pos(str,"(",")")
+  
 }

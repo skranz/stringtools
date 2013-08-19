@@ -2,7 +2,7 @@
 \alias{str.locate.at.start}
 \title{Locate a pattern at the start of strings}
 \usage{
-  str.locate.at.start(str, pattern, fixed = TRUE, ...)
+  str.locate.at.start(str, pattern, fixed = TRUE)
 }
 \description{
   Locate a pattern at the start of strings

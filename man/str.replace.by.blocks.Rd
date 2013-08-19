@@ -4,7 +4,9 @@
 \usage{
   str.replace.by.blocks(str, pattern, replacement,
     blocks = NULL, sub.txt = "SUB", block.start, block.end,
-    block.ignore = NULL, use.levels = NULL, ...)
+    block.ignore = NULL, use.levels = NULL, fixed = TRUE,
+    only.replace.smaller.than = NULL,
+    only.replace.larger.than = NULL)
 }
 \arguments{
   \item{str}{the string to replaced}
@@ -21,6 +23,14 @@
 
   \item{block.end}{string with which the blocks end, e.g.
   ")"}
+
+  \item{only.replace.smaller.than}{if not NULL only
+  replaces matches whose number of characters is less or
+  equal to only.replace.smaller.than}
+
+  \item{only.replace.larger.than}{if not NULL only replaces
+  matches whose number of characters is bigger or equal to
+  only.replace.larger.than}
 }
 \value{
   a string
@@ -29,3 +39,16 @@
   Replaces in str every occurence of pattern by replacement
 }
 
+\examples{\dontrun{
+  # Replace latex fractions
+  str = "5+\\frac{x^2+x^2}{1+\\frac{2}{x*5}}*2"
+  str.replace.by.blocks(str,"\\frac{_SUB_}{_SUB_}","(_SUB1_)/(_SUB2_)",
+                        block.start = "{", block.end = "}")  
+  str.replace.by.blocks(str,"\\frac{_SUB_}{_SUB_}","(_SUB1_)/(_SUB2_)",
+                        block.start = "{", block.end = "}",
+                        only.replace.larger.than=20)  
+  str.replace.by.blocks(str,"\\frac{_SUB_}{_SUB_}","(_SUB1_)/(_SUB2_)",
+                        block.start = "{", block.end = "}",
+                        only.replace.smaller.than=20)  
+  
+}}
