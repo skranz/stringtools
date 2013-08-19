@@ -11,14 +11,18 @@
 #'   list of vectors or matrices, specifying different pos for different str
 
 # Special charcters that can appear in find patterns
-library(stringr)
-library(restorepoint)
 
-DO_CHECK_STR_PAR = TRUE
+.onLoad = function(...)  {
+  # If loaded as library overwrite restore.point to an empty function
+  assign("restore.point", function(...){}, envir=parent.env(environment()))
+}
+
+glob = new.env()
+glob$DO_CHECK_STR_PAR = TRUE
 
 #' Check if parameter to a str function have allowed dimensions
 check.str.par = function(str,para) {  
-  if(!DO_CHECK_STR_PAR)
+  if(!glob$DO_CHECK_STR_PAR)
     return
   if (length(para)>1) {
     len = sapply(para,length)
@@ -173,6 +177,7 @@ str.split.at.pos = function(str, pos, keep.pos = FALSE, compl=NULL, max.char = m
       
   restore.point("str.split.at.pos")
   
+  
   if (is.list(pos)) {
     stopifnot(length(str)==length(pos))
     fun = function(i) 
@@ -182,7 +187,8 @@ str.split.at.pos = function(str, pos, keep.pos = FALSE, compl=NULL, max.char = m
   if (!is.matrix(pos)) {
     pos = cbind(pos,pos)
   }
-  
+  if (NROW(pos)==0)
+    return(str)
   if (pos.mat.like.list) {
     stopifnot(length(str)==NROW(pos))
     fun = function(i) 
@@ -918,7 +924,7 @@ examples.str.replace.at.pos = function() {
 examples.has.substr = function() {
   str = c("12347382709")
   pattern = c("a","4","56","34","766","b")
-  str.has.substr(str,pattern)  
+  has.substr(str,pattern)  
 }
 
 #' Replaces in str every occurence of pattern by replacement
@@ -1138,7 +1144,10 @@ replace.island = function(island.row, str,blocks, pattern.plains, level,pattern.
     replace.right = plains[match.ind+np-1,1] + last.pos[match.ind+np-1,2]-left
     replace.pos = rbind(replace.pos,c(replace.left,replace.right))
     #show.pos(replace.pos,str)
-    match.ind = match.ind + np      
+    
+    # The last plain may be overlapping
+    # This is a bit dirty.... need to think about some better code...
+    match.ind = match.ind + max(np-1,1)      
   }
   show.pos(replace.pos, island.str)
   new.island.str = str.replace.at.pos(island.str,replace.pos, new.str)
@@ -1248,6 +1257,11 @@ examples.str.replace.by.blocks = function() {
   str.replace.by.blocks(str,"\\frac{_SUB_}{_SUB_}","(_SUB1_)/(_SUB2_)",
                         block.start = "{", block.end = "}",
                         only.replace.smaller.than=20)  
+  str ="-\\frac{\\sigma_{m}-\\beta\\sigma_{b}}{\\beta-1}=\\frac{\\sigma_{m}-\\beta\\sigma_{b}}{1-\\beta}"
+  
+  str ="\\frac{1}{2}=\\frac{3}{4}"
+  str.replace.by.blocks(str,"\\frac{_SUB_}{_SUB_}","(_SUB1_)/(_SUB2_)",
+                        block.start = "{", block.end = "}")  
   
 }
 

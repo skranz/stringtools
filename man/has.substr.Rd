@@ -14,5 +14,5 @@ works similar than grepl}
 \examples{\dontrun{
   str = c("12347382709")
   pattern = c("a","4","56","34","766","b")
-  str.has.substr(str,pattern)  
+  has.substr(str,pattern)  
 }}
