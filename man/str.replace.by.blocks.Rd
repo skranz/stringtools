@@ -50,5 +50,10 @@
   str.replace.by.blocks(str,"\\frac{_SUB_}{_SUB_}","(_SUB1_)/(_SUB2_)",
                         block.start = "{", block.end = "}",
                         only.replace.smaller.than=20)  
+  str ="-\\frac{\\sigma_{m}-\\beta\\sigma_{b}}{\\beta-1}=\\frac{\\sigma_{m}-\\beta\\sigma_{b}}{1-\\beta}"
+  
+  str ="\\frac{1}{2}=\\frac{3}{4}"
+  str.replace.by.blocks(str,"\\frac{_SUB_}{_SUB_}","(_SUB1_)/(_SUB2_)",
+                        block.start = "{", block.end = "}")  
   
 }}

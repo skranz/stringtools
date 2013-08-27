@@ -17,7 +17,8 @@
   assign("restore.point", function(...){}, envir=parent.env(environment()))
 }
 
-glob = new.env()
+if (!exists("glob"))
+  glob = new.env()
 glob$DO_CHECK_STR_PAR = TRUE
 
 #' Check if parameter to a str function have allowed dimensions
@@ -33,6 +34,16 @@ check.str.par = function(str,para) {
   if ((length(unique(len[len>1]))>1)) {
     stop("Lengths of parameters are ", paste(c("str",names(para)),"=",len,collapse=" ")," All parameters with length>1 must have the same length!")
   }
+}
+
+#' Returns a string constisting of times spaces, vectorized over times
+#' @export
+str.space = function(times, space=" ") {
+  space.str = paste0(rep(space,max(times)),collapse="")
+  substring(space.str,1,last=times)
+}
+example.str.space = function() {
+  str.space(0:4)  
 }
 
 
@@ -375,8 +386,9 @@ str.find = function(str, pattern, fixed=TRUE, first=FALSE,all=!first, simplify =
       if (length(str)==1) {			
         if (first) {
           if (is.na(ret[[1]]))
-            return(character(0)) 
-          return(as.vector(ret[[1]]))
+            return(character(0))
+          return(ret[[1]])
+          #return(as.vector(ret[[1]]))
         }
         if (NROW(ret[[1]])==0)
           return(character(0)) 
@@ -402,7 +414,8 @@ str.find = function(str, pattern, fixed=TRUE, first=FALSE,all=!first, simplify =
       if (first) {
         if (is.na(ret[[1]]))
           return(matrix(NA,nrow=0,ncol=2)) 
-        return(as.vector(ret[[1]]))
+        return(ret[[1]])
+        #return(as.vector(ret[[1]]))
       }
       if (NROW(ret[[1]])==0)
         return(matrix(NA,nrow=0,ncol=2)) 
@@ -1133,6 +1146,9 @@ replace.island = function(island.row, str,blocks, pattern.plains, level,pattern.
   while (match.ind <= length(matches)-np+1) {
     #message("replace.island(match.ind=",match.ind,")")
     match.ind = which(matches & match.ind <= 1:length(matches) )[1]
+    if (is.na(match.ind))
+      break
+
     new.str = c(new.str,
                 str.replace.list(replacement,
                                  pattern=paste0("_",sub.txt,1:nm,"_"),
@@ -1196,6 +1212,12 @@ adapt.blocks.after.replace = function(block,...) {
 str.replace.by.blocks = function(str,pattern,replacement,blocks=NULL,sub.txt="SUB",block.start, block.end,block.ignore=NULL,use.levels=NULL,fixed=TRUE, only.replace.smaller.than=NULL, only.replace.larger.than=NULL) {
   restore.point("str.replace.by.level")
   library(data.table)
+  
+  if (length(str)>1) {
+    stopifnot(is.null(blocks))
+    new.str = sapply(str,str.replace.by.blocks,pattern=pattern,replacement=replacement,blocks=blocks,sub.txt=sub.txt,block.start=block.start, block.end=block.end,block.ignore=bock.ignore,use.levels=use.levels,fixed=fixed, only.replace.smaller.than=only.replace.smaller.than, only.replace.larger.than=only.replace.larger.than)
+    return(new.str)
+  }
   
   if (is.null(blocks))
     blocks = str.blocks.pos(str, start=block.start, end=block.end, ignore=block.ignore, fixed=fixed)
