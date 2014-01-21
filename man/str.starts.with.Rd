@@ -1,11 +1,11 @@
 \name{str.starts.with}
 \alias{str.starts.with}
-\title{Returns als elements of txt that begin with start}
+\title{Returns als elements of txt that begin with pattern}
 \usage{
-  str.starts.with(txt, start)
+  str.starts.with(txt, pattern)
 }
 \description{
-  Returns als elements of txt that begin with start
+  Returns als elements of txt that begin with pattern
 }
 
 \examples{\dontrun{

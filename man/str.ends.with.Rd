@@ -1,0 +1,18 @@
+\name{str.ends.with}
+\alias{str.ends.with}
+\title{Returns als elements of txt that end with pattern}
+\usage{
+  str.ends.with(txt, pattern)
+
+  str.ends.with(txt, pattern)
+}
+\description{
+  Returns als elements of txt that end with pattern
+
+  Returns als elements of txt that end with pattern
+}
+
+\examples{\dontrun{
+  str = c("Hi how are you", "hi", "now what", "Hi")
+  str.ends.with(str,"you")
+}}

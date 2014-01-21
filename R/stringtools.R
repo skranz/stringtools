@@ -36,6 +36,22 @@ check.str.par = function(str,para) {
   }
 }
 
+
+#' Returns the substring left to the first occurence of pattern
+#' @export
+str.left.of = function(str,pattern,...) {
+  pos = str.locate.first(str, pattern,...)
+  substring(str,1,pos[,1]-1)
+}
+
+#' Returns the substring right to the first occurence of pattern
+#' @export
+str.right.of = function(str,pattern,...) {
+  pos = str.locate.first(str, pattern,...)
+  substring(str,pos[,2]+1,)
+}
+
+
 #' Returns a string constisting of times spaces, vectorized over times
 #' @export
 str.space = function(times, space=" ") {
@@ -148,17 +164,56 @@ examples.str.remove.ends = function(str, left=0,right=0) {
   str.remove.ends(c("ABCDEF","01345","NOW!"),1:2,1)
 }
 
-#' Returns als elements of txt that begin with start
+#' Returns als elements of txt that begin with pattern
 #' @export
-str.starts.with = function(txt,start) {
-  substring(txt,1,nchar(start))==start
+str.starts.with = function(txt,pattern) {
+  substring(txt,1,nchar(pattern))==pattern
 } 
+
 
 examples.str.starts.with = function() {
   str = c("Hi how are you", "hi", "now what", "Hi")
   str.starts.with(str,"Hi")
 }
 
+
+#' Returns als elements of txt that end with pattern
+#' @export
+str.ends.with = function(txt,pattern) {
+  substring(txt,nchar(txt)-nchar(pattern)+1,)==pattern
+} 
+
+
+examples.str.ends.with = function() {
+  str = c("Hi how are you", "hi", "now what", "Hi")
+  str.ends.with(str,"you")
+}
+
+
+#' Returns a string constisting of times spaces, vectorized over times
+#' @export
+str.space = function(times, space=" ") {
+  space.str = paste0(rep(space,max(times)),collapse="")
+  substring(space.str,1,last=times)
+}
+
+example.str.space = function() {
+  str.space(0:4)  
+}
+
+
+
+#' Returns als elements of txt that end with pattern
+#' @export
+str.ends.with = function(txt,pattern) {
+  substring(txt,nchar(txt)-nchar(pattern)+1,)==pattern
+} 
+
+
+examples.str.ends.with = function() {
+  str = c("Hi how are you", "hi", "now what", "Hi")
+  str.ends.with(str,"you")
+}
 #' keeps characters on left
 #' @export
 str.left = function(str, len=1) {
