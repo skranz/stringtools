@@ -210,6 +210,7 @@ examples.cumsum.ignore = function() {
 }
 
 
+#' Combine a list of positions via logical AND
 #'
 #' @export
 combine.pos.list.and = function(pos.list,return.ind=TRUE) {
@@ -253,7 +254,8 @@ combine.pos.list.and = function(pos.list,return.ind=TRUE) {
 # pos3 = rbind(c(106,107),c(5,9),c(17,18))
 # combine.pos.list.and(list(pos1,pos2,pos3))
 
-#'
+#' Combine two positions via logical AND
+#' 
 #' @export
 combine.pos.and = function(pos1,pos2,return.ind=FALSE) {
   restore.point("combine.pos.and")
