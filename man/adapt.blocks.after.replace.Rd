@@ -2,9 +2,9 @@
 \alias{adapt.blocks.after.replace}
 \title{Helper function}
 \usage{
-  adapt.blocks.after.replace(block, ...)
+adapt.blocks.after.replace(block, ...)
 }
 \description{
-  Helper function
+Helper function
 }
 

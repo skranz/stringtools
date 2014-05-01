@@ -2,8 +2,8 @@
 \alias{str.find}
 \title{Find substring positions or matches}
 \usage{
-  str.find(str, pattern, fixed = TRUE, first = FALSE,
-    all = !first, simplify = TRUE, matches = FALSE, ...)
+\method{str}{find}(str, pattern, fixed = TRUE, first = FALSE,
+  all = !first, simplify = TRUE, matches = FALSE, ...)
 }
 \arguments{
   \item{str}{vector of strings that will be searched}
@@ -22,7 +22,7 @@
   extracted substrings}
 }
 \description{
-  A general wrapper from str.locate.first, str.locate.all,
-  str.extract.first, str.extract.all
+A general wrapper from str.locate.first, str.locate.all,
+str.extract.first, str.extract.all
 }
 

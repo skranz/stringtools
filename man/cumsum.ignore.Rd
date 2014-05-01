@@ -2,18 +2,9 @@
 \alias{cumsum.ignore}
 \title{Cummulative sum of number of characters that are ignored}
 \usage{
-  cumsum.ignore(ignore)
+\method{cumsum}{ignore}(ignore)
 }
 \description{
-  Cummulative sum of number of characters that are ignored
+Cummulative sum of number of characters that are ignored
 }
 
-\examples{\dontrun{
-  str =c("Now that is a nice matrix. Not?","but short!")
-  ignore = rep(FALSE,max(nchar(str)))
-  ignore[c(4:5,8:20)] = TRUE
-  ignore
-  cumsum.ignore(ignore)
-  ignore = matrix(ignore,nrow=NROW(str),ncol=length(ignore),byrow=TRUE)
-  cumsum.ignore(ignore)
-}}

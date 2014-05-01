@@ -1,9 +1,8 @@
 \name{regexp.fixed}
 \alias{regexp.fixed}
-\title{strings will be treated as fixed constant in regex
-e.g. transforms c("A*",".") into c("\QA*\E","\Q.\E")}
+\title{strings will be treated as fixed constant in regex}
 \usage{
-  regexp.fixed(str, fixed = TRUE)
+regexp.fixed(str, fixed = TRUE)
 }
 \arguments{
   \item{str}{a string vector}
@@ -11,17 +10,9 @@ e.g. transforms c("A*",".") into c("\QA*\E","\Q.\E")}
   \item{fixed}{if FALSE just return str}
 }
 \value{
-  transformed string vector of same size as str
+transformed string vector of same size as str
 }
 \description{
-  strings will be treated as fixed constant in regex e.g.
-  transforms c("A*",".") into c("\QA*\E","\Q.\E")
+strings will be treated as fixed constant in regex
 }
 
-\examples{\dontrun{
-  str = c("A.","*")
-  # regexp.fixed transforms strings
-  regexp.fixed(str)
-  # fixed in stringr flags strings instead
-  fixed(str)
-}}

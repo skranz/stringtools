@@ -2,18 +2,12 @@
 \alias{str.blocks.pos}
 \title{Returns a pos matrix indicating blocks like brackets ( ) or quoted parts "text"}
 \usage{
-  str.blocks.pos(str, start, end, ignore = NULL,
-    ignore.start = ignore, ignore.end = ignore,
-    fixed = TRUE, fixed.start = fixed, fixed.end = fixed)
+\method{str}{blocks.pos}(str, start, end, ignore = NULL,
+  ignore.start = ignore, ignore.end = ignore, fixed = TRUE,
+  fixed.start = fixed, fixed.end = fixed)
 }
 \description{
-  We allow for nested blocks. The position matrix also has
-  an attribute level that describes the level of each block
+We allow for nested blocks. The position matrix also has an
+attribute level that describes the level of each block
 }
 
-\examples{\dontrun{
-  str = '1+(5*(2+3)+(2+(4-1)))'
-#        123456789012345678901  
-  str.blocks.pos(str,"(",")")
-  
-}}

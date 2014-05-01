@@ -2,10 +2,10 @@
 \alias{str.number.matches}
 \title{Returns the number of matches of pattern in each element of str}
 \usage{
-  str.number.matches(str, pattern, ...)
+\method{str}{number.matches}(str, pattern, ...)
 }
 \description{
-  Returns the number of matches of pattern in each element
-  of str
+Returns the number of matches of pattern in each element of
+str
 }
 

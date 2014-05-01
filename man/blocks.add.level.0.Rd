@@ -2,9 +2,9 @@
 \alias{blocks.add.level.0}
 \title{Add level 0 to blocks}
 \usage{
-  blocks.add.level.0(blocks, str, end = nchar(str))
+blocks.add.level.0(blocks, str, end = nchar(str))
 }
 \description{
-  Add level 0 to blocks
+Add level 0 to blocks
 }
 

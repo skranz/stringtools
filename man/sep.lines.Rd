@@ -1,10 +1,11 @@
 \name{sep.lines}
 \alias{sep.lines}
-\title{transforms "A\nB" into c("A","B")}
+\title{transforms a single string with line breaks into a vector with one element for each line}
 \usage{
-  sep.lines(txt, collapse = "\n")
+sep.lines(txt, collapse = "\\n")
 }
 \description{
-  transforms "A\nB" into c("A","B")
+transforms a single string with line breaks into a vector
+with one element for each line
 }
 

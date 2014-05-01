@@ -2,17 +2,10 @@
 \alias{str.at.pos}
 \title{pos is a matrix or a list of matrices specifying positions as returned by str.locate.all}
 \usage{
-  str.at.pos(str, pos)
+\method{str}{at.pos}(str, pos)
 }
 \description{
-  pos is a matrix or a list of matrices specifying
-  positions as returned by str.locate.all
+pos is a matrix or a list of matrices specifying positions
+as returned by str.locate.all
 }
 
-\examples{\dontrun{
-  str = c("012ab0121","abce","0had112bb1")
-  pos = str.locate.all(str,"[a-z]*",fixed=FALSE)
-  pos
-  str.at.pos(str,pos)
-  return(ret)
-}}

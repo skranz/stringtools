@@ -1,14 +1,9 @@
-# #' A package with functions for string and text modifications to complement stringr
-# #' 
-# #' @name stringtools-package
-# #' @docType package
-# #' @author Sebastian Kranz \email{sebkranz@@gmail.com}
-
-
-#' pos can be a 
-#'   vector: assuming an element of size 1 that specifies a single char at that positions
-#'   n*2 matrix: first column left position, right column right position
-#'   list of vectors or matrices, specifying different pos for different str
+# A package with functions for string and text modifications to complement stringr
+# 
+# pos can be a 
+#   vector: assuming an element of size 1 that specifies a single char at that positions
+#   n*2 matrix: first column left position, right column right position
+#   list of vectors or matrices, specifying different pos for different str
 
 # Special charcters that can appear in find patterns
 
@@ -71,7 +66,6 @@ str.trim = function(txt) {
 
 
 #' strings will be treated as fixed constant in regex 
-#' e.g. transforms c("A*",".") into c("\QA*\E","\Q.\E")
 #'
 #' @param str a string vector
 #' @param fixed if FALSE just return str
@@ -108,14 +102,14 @@ examples.str.list.to.regexp.or = function(){
 }
 
 
-#' transforms c("A","B") into "A\nB"
+#' Combines c("A","B") into a single string seperated by line breaks
 #' 
 #' @export
 merge.lines = function(txt, collapse = "\n") {
 	paste(txt,collapse=collapse)
 }
 
-#' transforms "A\nB" into c("A","B") 
+#' transforms a single string with line breaks into a vector with one element for each line
 #' @export
 sep.lines = function(txt, collapse = "\n") {
 	if (length(txt)>1)

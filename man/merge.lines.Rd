@@ -1,15 +1,11 @@
 \name{merge.lines}
 \alias{merge.lines}
-\title{transforms c("A","B") into "A\nB"}
+\title{Combines c("A","B") into a single string seperated by line breaks}
 \usage{
-  merge.lines(txt, collapse = "\n")
+\method{merge}{lines}(txt, collapse = "\\n")
 }
 \description{
-  transforms c("A","B") into "A\nB"
+Combines c("A","B") into a single string seperated by line
+breaks
 }
 
-\examples{\dontrun{
-  merge = merge.lines(c("A","B"))
-  merge
-  sep.lines(merge)
-}}
