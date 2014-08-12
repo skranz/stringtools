@@ -32,18 +32,51 @@ check.str.par = function(str,para) {
 }
 
 
+
+examples.str.between = function() {
+  str = c("a * (4+3)","b+3)+1","(a*3+(1+2))", ")")
+  str.between(str,"(",")")
+  
+  str.between("#< type and","#< "," ")
+  
+}
+
+
+#' Returns the between the first occurence of start and the first occurence of end
+#' @export
+str.between = function(str,start,end,...) {
+  str.left.of(str.right.of(str,start,...),
+              end, ...)
+}
+
+
+examples.str.left.of = function() {
+  str = c("a = 5","b+3","a+3 = 4 = 3", "=")
+  str.left.of(str,"=")
+  str.left.of(str,"=", not.found=NA)
+  str.right.of(str,"=")
+  str.right.of(str,"=", not.found=NA)  
+}
+
 #' Returns the substring left to the first occurence of pattern
 #' @export
-str.left.of = function(str,pattern,...) {
+str.left.of = function(str,pattern,..., not.found=str) {
   pos = str.locate.first(str, pattern,...)
-  substring(str,1,pos[,1]-1)
+  res = substring(str,1,pos[,1]-1)
+  rows = is.na(pos[,1]) 
+  res[rows] = not.found[rows]
+  res
 }
 
 #' Returns the substring right to the first occurence of pattern
 #' @export
-str.right.of = function(str,pattern,...) {
+str.right.of = function(str,pattern,...,not.found=str) {
   pos = str.locate.first(str, pattern,...)
-  substring(str,pos[,2]+1,)
+  res = substring(str,pos[,2]+1,)
+  rows = is.na(pos[,2]) 
+  res[rows] = not.found[rows]
+  res
+
 }
 
 
@@ -114,12 +147,14 @@ merge.lines = function(txt, collapse = "\n") {
 sep.lines = function(txt, collapse = "\n") {
 	if (length(txt)>1)
 		txt = merge.lines(txt,collapse)
-	str.split(txt,collapse)[[1]]
+	str_split(txt,collapse)[[1]]
 }
 examples.merge.lines = test.sep.lines = function() {
   merge = merge.lines(c("A","B"))
   merge
   sep.lines(merge)
+  
+  
 }
 			
 #' Returns a logical vector with TRUE for every character of str that is in pos
@@ -889,6 +924,8 @@ str.split = function(str,pattern, first=FALSE, keep.match = FALSE,...) {
     pos = str.locate.first(str=str,pattern=pattern,...)
     return(str.split.at.pos(str,pos,keep.pos=keep.match))    
   } else {
+    #pos = str.locate.all(str=str,pattern=pattern)
+
     pos = str.locate.all(str=str,pattern=pattern,...)
     restore.point("jhhshf")
     return(str.split.at.pos(str,pos,keep.pos=keep.match))
@@ -896,6 +933,9 @@ str.split = function(str,pattern, first=FALSE, keep.match = FALSE,...) {
 }
                     
 examples.str.split = function() {
+  str = "Hi\n\nyou!"
+  str.split(str,"\n", keep.match=!TRUE)
+  
   str <- c("aes_afe_f", "qwe.rty", "yui0op[3", "b")
   #split x on the letter e
   str  

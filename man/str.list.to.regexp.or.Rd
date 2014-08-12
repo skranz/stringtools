@@ -17,3 +17,7 @@ Transforms a vector of strings like c("A","B","C") into
 "A|B|C"
 }
 
+\examples{\dontrun{
+  greek=c("alpha","beta","gamma")	
+  str.list.to.regexp.or(greek)
+}}

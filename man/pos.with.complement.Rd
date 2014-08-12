@@ -11,3 +11,11 @@ vector indicating whether a row in the matrix is the
 original matrix or a complement
 }
 
+\examples{\dontrun{
+  pos = matrix(c(
+    2,2,
+    5,8,
+    10,10
+  ),3,2,byrow=TRUE)
+  pos.with.complement(pos)
+}}

@@ -8,3 +8,9 @@
 Locate a pattern at the start of strings
 }
 
+\examples{\dontrun{
+  str.locate.at.start(c("0123456012","1230","012012","01bsf"),"012")
+  str.locate.at.start("0123456",c("012","0","1"))
+  str.locate.at.end(c("0123456012","1230","012","01bsf"),"012")
+  
+}}

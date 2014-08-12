@@ -11,3 +11,9 @@ We allow for nested blocks. The position matrix also has an
 attribute level that describes the level of each block
 }
 
+\examples{\dontrun{
+  str = '1+(5*(2+3)+(2+(4-1)))'
+#        123456789012345678901  
+  str.blocks.pos(str,"(",")")
+  
+}}

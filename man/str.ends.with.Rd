@@ -12,3 +12,7 @@ Returns als elements of txt that end with pattern
 Returns als elements of txt that end with pattern
 }
 
+\examples{\dontrun{
+  str = c("Hi how are you", "hi", "now what", "Hi")
+  str.ends.with(str,"you")
+}}

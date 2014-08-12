@@ -9,3 +9,10 @@ pos is a matrix or a list of matrices specifying positions
 as returned by str.locate.all
 }
 
+\examples{\dontrun{
+  str = c("012ab0121","abce","0had112bb1")
+  pos = str.locate.all(str,"[a-z]*",fixed=FALSE)
+  pos
+  str.at.pos(str,pos)
+  return(ret)
+}}
