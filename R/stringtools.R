@@ -147,7 +147,7 @@ merge.lines = function(txt, collapse = "\n") {
 sep.lines = function(txt, collapse = "\n") {
 	if (length(txt)>1)
 		txt = merge.lines(txt,collapse)
-	str_split(txt,collapse)[[1]]
+	stringr::str_split(txt,collapse)[[1]]
 }
 examples.merge.lines = test.sep.lines = function() {
   merge = merge.lines(c("A","B"))
