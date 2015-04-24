@@ -9,3 +9,10 @@
 Combines c("A","B") into a single string seperated by line breaks
 }
 
+\examples{\dontrun{
+  merge = merge.lines(c("A","B"))
+  merge
+  sep.lines(merge)
+  
+  
+}}

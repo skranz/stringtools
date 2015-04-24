@@ -9,3 +9,6 @@
 Locate a pattern at the end of str
 }
 
+\examples{\dontrun{
+  str.locate.at.end(c("0123456012","1230","012","01bsf"),"012")  
+}}

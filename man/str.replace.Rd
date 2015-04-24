@@ -21,3 +21,18 @@ a string
 Replaces in str every occurence of pattern by replacement
 }
 
+\examples{\dontrun{
+  str = c("12345678901234567890")
+  pattern = c("34","12")
+  replacement = c("AB","Holla die Waldfee")
+  pos = cbind(1,10)
+  str.replace(str,pattern,replacement, ignore.pos=pos)
+  str.replace(str,pattern,replacement, only.pos=pos)
+  str.replace(str,pattern,replacement)
+  
+  str = "int{5*2}*{2*3}"
+  pattern = "int{_IGNORE_}"
+  replacement = "integer{_IGNORE_}"  
+  pos = cbind(c(5,11),c(7,13))
+  str.replace(str,pattern,replacement, ignore.pos=pos)
+}}

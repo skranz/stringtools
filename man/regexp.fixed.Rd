@@ -17,3 +17,10 @@ transformed string vector of same size as str
 strings will be treated as fixed constant in regex
 }
 
+\examples{\dontrun{
+  str = c("A.","*")
+  # regexp.fixed transforms strings
+  regexp.fixed(str)
+  # fixed in stringr flags strings instead
+  fixed(str)
+}}

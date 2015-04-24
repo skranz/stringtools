@@ -5,7 +5,7 @@ example.replace.german.umlaute = function()
   txt = replace.german.umlaute(file=file)
 }
 
-#' replaces German Umlaute like ö,ü,ä with ascii letters oe, ue, ae
+#' replaces German Umlaute with ascii letters oe, ue, ae
 replace.german.umlaute = function(txt=readLines(file), file=NULL, write.file = !is.null(file)) {
   txt = gsub("?","ae",txt, fixed=TRUE)
   txt = gsub("?","oe",txt, fixed=TRUE)

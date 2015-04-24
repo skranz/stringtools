@@ -9,3 +9,7 @@
 Returns als elements of txt that begin with pattern
 }
 
+\examples{\dontrun{
+  str = c("Hi how are you", "hi", "now what", "Hi")
+  str.starts.with(str,"Hi")
+}}

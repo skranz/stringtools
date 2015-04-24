@@ -9,3 +9,6 @@
 A very slow implementation
 }
 
+\examples{\dontrun{
+  str.replace.list("na dies ist doch",c("a","e"),c("A","E"))
+}}

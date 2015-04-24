@@ -32,3 +32,21 @@ a string
 Replaces in str every occurence of pattern by replacement
 }
 
+\examples{\dontrun{
+  # Replace latex fractions
+  str = "5+\\frac{x^2+x^2}{1+\\frac{2}{x*5}}*2"
+  str.replace.by.blocks(str,"\\frac{_SUB_}{_SUB_}","(_SUB1_)/(_SUB2_)",
+                        block.start = "{", block.end = "}")  
+  str.replace.by.blocks(str,"\\frac{_SUB_}{_SUB_}","(_SUB1_)/(_SUB2_)",
+                        block.start = "{", block.end = "}",
+                        only.replace.larger.than=20)  
+  str.replace.by.blocks(str,"\\frac{_SUB_}{_SUB_}","(_SUB1_)/(_SUB2_)",
+                        block.start = "{", block.end = "}",
+                        only.replace.smaller.than=20)  
+  str ="-\\frac{\\sigma_{m}-\\beta\\sigma_{b}}{\\beta-1}=\\frac{\\sigma_{m}-\\beta\\sigma_{b}}{1-\\beta}"
+  
+  str ="\\frac{1}{2}=\\frac{3}{4}"
+  str.replace.by.blocks(str,"\\frac{_SUB_}{_SUB_}","(_SUB1_)/(_SUB2_)",
+                        block.start = "{", block.end = "}")  
+  
+}}

@@ -11,3 +11,8 @@ Returns for every element of str whether there is a match with pattern
 works similar than grepl
 }
 
+\examples{\dontrun{
+  str = c("12347382709")
+  pattern = c("a","4","56","34","766","b")
+  has.substr(str,pattern)  
+}}
