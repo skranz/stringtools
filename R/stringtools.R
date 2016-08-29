@@ -519,7 +519,9 @@ str.find = function(str, pattern, fixed=TRUE, first=FALSE,all=!first, simplify =
 #' @export
 str.locate.first = function(str, pattern, fixed=TRUE, perl=FALSE, ignore =NULL, ignore.pos=NULL,only.pos=NULL) {
   restore.point("str.locate.first")
-
+  if (is.null(pattern))
+    return(cbind(start=numeric(0),end=numeric(0)))
+  
   #print(ignore.pos)
   ignore = get.ignore(ignore,ignore.pos,only.pos,str=str)
   
