@@ -581,6 +581,7 @@ str.locate.first = function(str, pattern, fixed=TRUE, perl=FALSE, ignore =NULL, 
 
 examples.str.locate.first = function() {
   
+  str.locate.first("Hello",NULL)
   
   str.locate.first("Hello","l")
   str.locate.first(c("Hello","What","lol"),"l")
@@ -1302,8 +1303,7 @@ adapt.blocks.after.replace = function(block,...) {
 #' @export
 str.replace.by.blocks = function(str,pattern,replacement,blocks=NULL,sub.txt="SUB",block.start, block.end,block.ignore=NULL,use.levels=NULL,fixed=TRUE, only.replace.smaller.than=NULL, only.replace.larger.than=NULL) {
   restore.point("str.replace.by.level")
-  library(data.table)
-  
+
   if (length(str)>1) {
     stopifnot(is.null(blocks))
     new.str = sapply(str,str.replace.by.blocks,pattern=pattern,replacement=replacement,blocks=blocks,sub.txt=sub.txt,block.start=block.start, block.end=block.end,block.ignore=bock.ignore,use.levels=use.levels,fixed=fixed, only.replace.smaller.than=only.replace.smaller.than, only.replace.larger.than=only.replace.larger.than)
@@ -1341,7 +1341,7 @@ str.replace.by.blocks = function(str,pattern,replacement,blocks=NULL,sub.txt="SU
     island.rows = which(levels==level)     
     ret =lapply(island.rows,replace.island,str=str,blocks=blocks, pattern.plains=pattern.plains, level=level,pattern.number.mountains=pattern.number.mountains,replacement=replacement,fixed=fixed,sub.txt=sub.txt)
     
-    df = data.frame(rbindlist(ret),island.rows)
+    df = data.frame(data.table::rbindlist(ret),island.rows)
     df = df[df[,"replaced"],]
     if (!is.null(only.replace.larger.than))
       df = df[nchar(df$old)>=only.replace.larger.than,]

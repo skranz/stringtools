@@ -7,6 +7,5 @@ Author: Sebastian Kranz
 Maintainer: Sebastian Kranz <sebastian.kranz@uni-ulm.de>
 Description: Tools for working with strings in R
 License: GPL >= 2.0
-Depends:
-  data.table,
-  stringr
+Depends: stringr
+Suggests: data.table
