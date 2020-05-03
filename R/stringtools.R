@@ -460,7 +460,7 @@ str.find = function(str, pattern, fixed=TRUE, first=FALSE,all=!first, simplify =
   # Return the found matches instead of the position
   if (matches) {
     if (fixed)
-      pattern = fixed(pattern)
+      pattern = stringr::fixed(pattern)
     if (all) {
       ret = str_extract_all(str,pattern,...)
     } else {
@@ -487,7 +487,7 @@ str.find = function(str, pattern, fixed=TRUE, first=FALSE,all=!first, simplify =
   
   # Return position of found strings
   if (fixed)
-    pattern = fixed(pattern)
+    pattern = stringr::fixed(pattern)
   if (all) {
     ret = str_locate_all(str,pattern,...)
   } else {
@@ -528,7 +528,7 @@ str.locate.first = function(str, pattern, fixed=TRUE, perl=FALSE, ignore =NULL, 
   # Return positions of found strings  
   if (is.null(ignore)) {
     if (fixed) {
-      ret = str_locate(str,fixed(pattern))
+      ret = str_locate(str,stringr::fixed(pattern))
       return(ret)
     }
     if (length(pattern)==1) {
@@ -730,7 +730,7 @@ str.locate.all = function(str, pattern, fixed=TRUE, perl=FALSE, ignore =NULL, ig
   
   if (is.null(ignore)) {
     if (fixed) {
-      ret = str_locate_all(str,fixed(pattern))
+      ret = str_locate_all(str,stringr::fixed(pattern))
       return(ret)
     }
     

@@ -1,8 +1,8 @@
 Package: stringtools
 Type: Package
 Title: Tools for working with strings in R
-Version: 0.01
-Date: 2013-08-15
+Version: 0.02
+Date: 2020-05-03
 Author: Sebastian Kranz
 Maintainer: Sebastian Kranz <sebastian.kranz@uni-ulm.de>
 Description: Tools for working with strings in R
