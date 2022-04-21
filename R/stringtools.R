@@ -775,13 +775,26 @@ str.locate.all = function(str, pattern, fixed=TRUE, perl=FALSE, ignore =NULL, ig
   pos.list = str_locate_all(str.ig,pattern)
   
   add.ci.to.pos = function(i) {
+    #estore.point("jsodjsfjs")
+    # position in str.ig
     pos.mat = pos.list[[i]]
-    if (length(pos.mat)==0)
+    if (length(pos.mat) == 0) 
       return(pos.mat)
-    ci.shifted = ci[i,!ignore[i,]]
-    ci.shifted = matrix(ci.shifted,NROW(pos.mat),length(ci.shifted),byrow=TRUE)
-    left = as.numeric(pos.mat[,1] + ci.shifted[,pos.mat[,1]])
-    pos.mat + left - pos.mat[,1]
+    
+    # ci.shifted tells us how much to add
+    # to pos.mat positions when translating
+    # str.ig positions to str positions
+    ci.shifted = ci[i, !ignore[i, ]]
+    
+    # One row for each pos.mat
+    ci.shifted = matrix(ci.shifted, NROW(pos.mat), length(ci.shifted), byrow = TRUE)
+    left.pos.shift = ci.shifted[cbind(seq_len(NROW(pos.mat)), pos.mat[, 1]) ]
+    #right.pos.shift = ci.shifted[cbind(seq_len(NROW(pos.mat)), pos.mat[, 2]) ]
+    # pos.mat + cbind(left.pos.shift, right.pos.shift)
+    
+    # this is equivalent to the lines above
+    # as pos.mat[,2] always has same shift as pos.mat[,1]
+    pos.mat + left.pos.shift
   }
   lapply(seq_along(pos.list),add.ci.to.pos)
 }
@@ -1455,7 +1468,7 @@ str.blocks.pos= function(str, start, end,
 			            outer=cbind(start.pos[,1],end.pos[,2]),
 			            levels=rep(1,n/2)))
 		} else {
-		  return(list(inner=start.pos, outer=start.pos, levels=c()))
+		  return(list(inner=pos, outer=pos, levels=c()))
 		}
   }
 }
