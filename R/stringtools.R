@@ -1407,7 +1407,7 @@ blocks.add.level.0 = function(blocks,str,end=nchar(str)) {
 #' @export
 str.blocks.pos= function(str, start, end,
   ignore = NULL, ignore.start = ignore, ignore.end = ignore, 
-  fixed = TRUE,fixed.start = fixed, fixed.end = fixed) {
+  fixed = TRUE,fixed.start = fixed, fixed.end = fixed, verbose=TRUE) {
 
   restore.point("str.blocks.pos")                                                          
   if (length(str) > 1)
@@ -1419,8 +1419,10 @@ str.blocks.pos= function(str, start, end,
     end.pos   = str.locate.all(str, end, ignore=ignore.end,fixed=fixed.start)[[1]]
     # Validity check
     if (NROW(start.pos) != NROW(end.pos)) {
-			print(paste("Error when finding ",start,end, "block in"))
-			print(str)
+			if (verbose) {
+        cat(paste0("Error when finding ",start,end, "block in"))
+			  cat(paste0("\n",str))
+			}
       stop("Number of block starts and ends differs!")
     }
     
